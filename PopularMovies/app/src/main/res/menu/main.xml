@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu  xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools" tools:context=".MainActivity">
+    <item android:orderInCategory="1"
+        android:id="@+id/sort_spinner_menu_item"
+            app:showAsAction="ifRoom"
+
+        app:actionLayout="@layout/sort_spinner_layout"
+        android:title="qwe">
+
+    </item>
+</menu>
