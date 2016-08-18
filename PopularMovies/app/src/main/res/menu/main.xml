@@ -7,7 +7,7 @@
             app:showAsAction="ifRoom"
 
         app:actionLayout="@layout/sort_spinner_layout"
-        android:title="qwe">
+        android:title="@string/spinner_title">
 
     </item>
 </menu>

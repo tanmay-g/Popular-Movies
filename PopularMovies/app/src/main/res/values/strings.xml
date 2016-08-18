@@ -1,13 +1,17 @@
 <resources>
     <string name="app_name">Popular Movies</string>
 
+    <string name="content_authority">tanmaygodbole.popularmovies</string>
+
     <string-array name="sort_spinner_choices">
         <item>Popular</item>
         <item>Top Rated</item>
+        <item>Favourites</item>
     </string-array>
     <string-array name="sort_spinner_choice_values">
         <item>popular</item>
         <item>top_rated</item>
+        <item>favourites</item>
     </string-array>
     <string name="menu_settings_title">Settings</string>
     <string name="title_activity_movie_detail">MovieDetailActivity</string>
@@ -18,5 +22,9 @@
     <string name="rating_placeholder">Rating comes here</string>
     <string name="synopsis_placeholder">Here comes the movie synopsis</string>
     <string name="movie_poster_image">Movie Poster image</string>
+
+    <string name="image_dir">.popularMovies</string>
+    <string name="favourite_button_title">Favourite</string>
+    <string name="spinner_title">Choose items to display</string>
 
 </resources>
