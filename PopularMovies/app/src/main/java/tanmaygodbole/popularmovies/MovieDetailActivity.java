@@ -6,6 +6,16 @@ import android.support.v7.app.AppCompatActivity;
 public class MovieDetailActivity extends AppCompatActivity {
 
     private static final String LOG_TAG = MovieDetailActivity.class.getSimpleName();
+//    private static final String fragmentSaveKey = "fragmentSaveKey";
+//    private Fragment savedFragment;
+//    private String movieDetailFragmentTag = "movieDetailFragmentTag";
+//    @Override
+//    protected void onSaveInstanceState(Bundle outState) {
+//        if (savedFragment == null)
+//            savedFragment = getSupportFragmentManager().findFragmentByTag(movieDetailFragmentTag);
+//        getSupportFragmentManager().putFragment(outState, fragmentSaveKey, savedFragment);
+//        super.onSaveInstanceState(outState);
+//    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -13,8 +23,13 @@ public class MovieDetailActivity extends AppCompatActivity {
         setContentView(R.layout.activity_movie_detail);
         if (savedInstanceState == null) {
             getSupportFragmentManager().beginTransaction()
-                    .add(R.id.container, new MovieDetailFragment())
+                    .replace(R.id.container, new MovieDetailFragment())
                     .commit();
+//            savedFragment = getSupportFragmentManager().findFragmentByTag(movieDetailFragmentTag);
         }
+//        else {
+//            savedFragment = getSupportFragmentManager().getFragment(savedInstanceState, fragmentSaveKey);
+//            getSupportFragmentManager().beginTransaction().replace(R.id.container, savedFragment).commit();
+//        }
     }
 }

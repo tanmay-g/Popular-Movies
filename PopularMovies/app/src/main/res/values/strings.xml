@@ -26,5 +26,8 @@
     <string name="image_dir">.popularMovies</string>
     <string name="favourite_button_title">Favourite</string>
     <string name="spinner_title">Choose items to display</string>
+    <string name="trailers_label">Trailers</string>
+    <string name="reviews_label">Reviews</string>
+    <string name="play_button_description">Play button</string>
 
 </resources>

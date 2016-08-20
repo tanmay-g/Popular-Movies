@@ -121,7 +121,6 @@ public class AsyncMainDataLoader extends AsyncTaskLoader<Cursor> {
 
         }
         getMovieDataFromJson(popularJSON, topratedJSON);
-
         return null;
     }
 

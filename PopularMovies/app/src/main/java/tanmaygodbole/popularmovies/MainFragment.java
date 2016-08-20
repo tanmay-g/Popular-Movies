@@ -76,7 +76,9 @@ public class MainFragment extends Fragment implements LoaderManager.LoaderCallba
         SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(getActivity());
         long lastSync = settings.getLong(lastSyncKey, 0);
         if (System.currentTimeMillis() - lastSync >= DAY_IN_MILLIS)
+//            getActivity().getLoaderManager().initLoader(ASYNC_MAIN_DATA_LOADER, null, this).forceLoad();
             getLoaderManager().initLoader(ASYNC_MAIN_DATA_LOADER, null, this).forceLoad();
+//            getLoaderManager().initLoader(ASYNC_MAIN_DATA_LOADER, null, this);
         else
             getLoaderManager().initLoader(CURS_LOADER, null, this);
 
@@ -329,9 +331,11 @@ public class MainFragment extends Fragment implements LoaderManager.LoaderCallba
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         switch (id){
             case ASYNC_MAIN_DATA_LOADER: {
+                Log.i(LOG_TAG, "Starting AsyncLoader");
                 return new AsyncMainDataLoader(getActivity(), args);
             }
             case CURS_LOADER: {
+                Log.i(LOG_TAG, "Starting CursorLoader");
                 Uri fetchUri = null;
                 switch (spinnerPrefValue){
                     case POPULAR:{
@@ -379,6 +383,7 @@ public class MainFragment extends Fragment implements LoaderManager.LoaderCallba
 
             }
             case CURS_LOADER:{
+                Log.i(LOG_TAG, "Finished CursorLoader");
                 mCursAdapter.swapCursor(data);
 //                mCursAdapter.notifyDataSetChanged();
                 break;
