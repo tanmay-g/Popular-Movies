@@ -34,7 +34,10 @@ public class TrailerAdapter extends DetailsContentAdapter {
 
         Map.Entry<String, String> item = getItem(position);
 
-        ((TextView) resultView.findViewById(R.id.trailer_name)).setText(item.getKey());
+        TextView trailerName = ((TextView) resultView.findViewById(R.id.trailer_name));
+        trailerName.setText(item.getKey());
+        trailerName.setId(View.generateViewId());
+
         resultView.setTag(item.getValue());
 
         resultView.setOnClickListener(new View.OnClickListener() {
@@ -46,6 +49,9 @@ public class TrailerAdapter extends DetailsContentAdapter {
                 context.startActivity(youtubeIntent);
             }
         });
+
+
+        resultView.setId(View.generateViewId());
 
         return resultView;
     }

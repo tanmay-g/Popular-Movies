@@ -7,13 +7,16 @@
 
     <GridView
         android:layout_width="wrap_content"
+        android:numColumns="2"
         android:layout_height="fill_parent"
         android:id="@+id/main_grid"
-        android:numColumns="2"
-        android:columnWidth="400dp"
         android:stretchMode="columnWidth"
         android:gravity="fill"
-        android:background="#e0e0e0">
+        style="@style/gridViewStyle"
+        android:background="#e0e0e0"
+        android:drawSelectorOnTop="true"
+        >
     </GridView>
+        <!--android:columnWidth="400dp"-->
 
 </FrameLayout>

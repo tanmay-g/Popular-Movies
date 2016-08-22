@@ -2,9 +2,12 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="tanmaygodbole.popularmovies">
 
-    <!--<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />-->
     <uses-permission android:name="android.permission.INTERNET" />
-    <!--<uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />-->
+
+    <permission android:name="tanmaygodbole.popularmovies.movieDB"
+        android:protectionLevel="dangerous"
+        android:label="MovieControl"
+        />
 
     <application
         android:name=".PopularMoviesApplication"
@@ -36,13 +39,7 @@
             android:syncable="true"
             android:permission="tanmaygodbole.popularmovies.movieDB"
             android:authorities="@string/content_authority" />
-        <!--android:authorities="@string/content_authority"-->
 
     </application>
-
-    <permission android:name="tanmaygodbole.popularmovies.movieDB"
-        android:protectionLevel="dangerous"
-        android:label="MovieControl"
-        />
 
 </manifest>

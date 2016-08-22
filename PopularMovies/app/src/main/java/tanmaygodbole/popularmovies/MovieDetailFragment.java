@@ -1,7 +1,6 @@
 package tanmaygodbole.popularmovies;
 
 import android.content.ContentValues;
-import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
@@ -14,6 +13,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
@@ -33,6 +33,8 @@ public class MovieDetailFragment extends Fragment{
     private String movieId;
     private static final int CURS_LOADER = 0;
     private static final int ASYNC_DETAILS_LOADER = 1;
+    static final String DETAIL_URI_KEY = "DETAIL_URI_KEY";
+    private boolean restoring = false;
 
     private LoaderManager.LoaderCallbacks<HashMap<String, String>[]> asyncLoaderListener = new LoaderManager.LoaderCallbacks<HashMap<String, String>[]>() {
         @Override
@@ -151,11 +153,11 @@ public class MovieDetailFragment extends Fragment{
     }
 
     @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        super.onCreateOptionsMenu(menu, inflater);
-        inflater.inflate(R.menu.details_fragment_menu, menu);
-        CheckBox favStar = (CheckBox) menu.findItem(R.id.favorite_button_menu_item).getActionView();
-        if (favStar != null){
+    public void onPrepareOptionsMenu(Menu menu) {
+        super.onPrepareOptionsMenu(menu);
+        MenuItem starItem = menu.findItem(R.id.favorite_button_menu_item);
+        if (starItem != null) {
+            CheckBox favStar = (CheckBox) starItem.getActionView();
             //set state as per db
             Cursor favTableQueryResult = getActivity().getContentResolver().query(
                     MoviesDataContract.FavouritesEntry.buildFavouritesUri(Long.parseLong(movieId)),
@@ -165,6 +167,30 @@ public class MovieDetailFragment extends Fragment{
                     null
             );
             favStar.setChecked(favTableQueryResult.moveToFirst());
+//            Log.i(LOG_TAG, "Setting star value to: " + favStar.isChecked());
+        }
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        Log.i(LOG_TAG, "onCreateOptionsMenu");
+        super.onCreateOptionsMenu(menu, inflater);
+        if (movieId == null)
+            return;
+        inflater.inflate(R.menu.details_fragment_menu, menu);
+        MenuItem starItem = menu.findItem(R.id.favorite_button_menu_item);
+        if (starItem != null) {
+            CheckBox favStar = (CheckBox) starItem.getActionView();
+            //set state as per db
+//            Cursor favTableQueryResult = getActivity().getContentResolver().query(
+//                    MoviesDataContract.FavouritesEntry.buildFavouritesUri(Long.parseLong(movieId)),
+//                    null,
+//                    null,
+//                    null,
+//                    null
+//            );
+//            favStar.setChecked(favTableQueryResult.moveToFirst());
+            getActivity().invalidateOptionsMenu();
 
             favStar.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -197,15 +223,17 @@ public class MovieDetailFragment extends Fragment{
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        restoring = (savedInstanceState != null);
         Log.i(LOG_TAG, "onCreateView");
         View rootView = inflater.inflate(R.layout.fragment_movie_detail, container, false);
-        Intent callingIntent = getActivity().getIntent();
-        if (callingIntent != null){
-            //get MovieData
-            mSelectedMovieUri = callingIntent.getData();
+        Bundle arguments = getArguments();
+        if (arguments != null) {
+            mSelectedMovieUri = arguments.getParcelable(DETAIL_URI_KEY);
             movieId = MoviesDataContract.MoviesEntry.getMovieIdFromUri(mSelectedMovieUri);
         }
-        //populateScreen(rootView);
+        else
+            return null;
+
         posterView = (ImageView) rootView.findViewById(R.id.poster);
         titleView = ((TextView)rootView.findViewById(R.id.title));
         synopsisView = ((TextView)rootView.findViewById(R.id.synopsis));
@@ -222,10 +250,14 @@ public class MovieDetailFragment extends Fragment{
     @Override
     public void onResume() {
         Log.i(LOG_TAG, "onResume");
-        getLoaderManager().initLoader(CURS_LOADER, null, cursorLoaderListener);
-        Bundle args = new Bundle();
-        args.putString(AsyncDetailsDataLoader.detailsLoaderBundleMovieIdKey, movieId);
-        getLoaderManager().initLoader(ASYNC_DETAILS_LOADER, args, asyncLoaderListener);
+        if (movieId != null && !restoring) {
+            getLoaderManager().initLoader(CURS_LOADER, null, cursorLoaderListener);
+            Bundle args = new Bundle();
+            args.putString(AsyncDetailsDataLoader.detailsLoaderBundleMovieIdKey, movieId);
+            getLoaderManager().initLoader(ASYNC_DETAILS_LOADER, args, asyncLoaderListener);
+        }
+        if (restoring)
+            Log.d(LOG_TAG, "Skipping loaders because will restore");
         super.onResume();
     }
 

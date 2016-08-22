@@ -32,7 +32,7 @@ public abstract class DetailsContentAdapter extends BaseAdapter {
 
     @Override
     public long getItemId(int position) {
-        //won't get used. Else, fix
+        //TODO see if adding unique id auto saves state
         return 0;
     }
 

@@ -1,6 +1,5 @@
 package tanmaygodbole.popularmovies;
 
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.net.Uri;
@@ -24,8 +23,6 @@ import android.widget.Spinner;
 
 import tanmaygodbole.popularmovies.data.MoviesDataContract;
 
-;
-
 
 public class MainFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
 
@@ -34,19 +31,20 @@ public class MainFragment extends Fragment implements LoaderManager.LoaderCallba
     private static final String lastSyncKey = "lastSync";
     private static final long DAY_IN_MILLIS = 1000 * 60 * 60 * 24;
 
-    private static String[] sortValues = null;// = {"popular", "top_rated"};
-//    static final String movieDataKey = "movieData";
+    //    static final String movieDataKey = "movieData";
 //    private ArrayList<MovieData> movieData = new ArrayList<>();
     //private final static String movieDataSaveStateKey = "movieData";
 //    private CustomMovieToImageAdapter imageAdapter;
     private MainFragmentCursorAdapter mCursAdapter;
 
-//    private int mSelectedItemPosition = GridView.INVALID_POSITION;
-//    private final static String mSelectedItemPosKey = "selectedItemPosKey";
+    private int mSelectedItemPosition = GridView.INVALID_POSITION;
+    private final static String mSelectedItemPosKey = "selectedItemPosKey";
 
     //private int sortPreferenceValue = 0;
     private Spinner sortTypeSpinner;
     private static final String spinnerPrefKey = "spinnerPref";
+    private static final String mainGridStateKey = "mainGridStateKey";
+
     private int spinnerPrefValue = -1;
     private final int POPULAR = 0;
     private final int TOPRATED = 1;
@@ -71,17 +69,37 @@ public class MainFragment extends Fragment implements LoaderManager.LoaderCallba
             MoviesDataContract.MoviesEntry.COLUMN_OVERVIEW
     };
 
+//    private boolean mTwoPane;
+    private GridView mainGrid;
+
+    /**
+     * A callback interface that all activities containing this fragment must
+     * implement. This mechanism allows activities to be notified of item
+     * selections.
+     */
+    public interface Callback {
+        /**
+         * DetailFragmentCallback for when an item has been selected.
+         */
+        public void onItemSelected(Uri detailUri);
+    }
+
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(getActivity());
-        long lastSync = settings.getLong(lastSyncKey, 0);
-        if (System.currentTimeMillis() - lastSync >= DAY_IN_MILLIS)
+//        if (savedInstanceState == null) {
+            SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(getActivity());
+            long lastSync = settings.getLong(lastSyncKey, 0);
+            if (System.currentTimeMillis() - lastSync >= DAY_IN_MILLIS)
 //            getActivity().getLoaderManager().initLoader(ASYNC_MAIN_DATA_LOADER, null, this).forceLoad();
-            getLoaderManager().initLoader(ASYNC_MAIN_DATA_LOADER, null, this).forceLoad();
+                getLoaderManager().initLoader(ASYNC_MAIN_DATA_LOADER, null, this).forceLoad();
 //            getLoaderManager().initLoader(ASYNC_MAIN_DATA_LOADER, null, this);
-        else
-            getLoaderManager().initLoader(CURS_LOADER, null, this);
-
+            else
+                getLoaderManager().initLoader(CURS_LOADER, null, this);
+//        }
+//        else {
+//            Log.i(LOG_TAG, "Skipping loaders, restoring saved state");
+//            mainGrid.onRestoreInstanceState(savedInstanceState.getParcelable(mainGridStateKey));
+//        }
         super.onActivityCreated(savedInstanceState);
     }
 
@@ -89,7 +107,8 @@ public class MainFragment extends Fragment implements LoaderManager.LoaderCallba
     public void onSaveInstanceState(Bundle outState) {
         //Log.d(LOG_TAG, "saving instance");
         outState.putInt(spinnerPrefKey, sortTypeSpinner.getSelectedItemPosition());
-//        outState.putInt(mSelectedItemPosKey, mSelectedItemPosition);
+        outState.putInt(mSelectedItemPosKey, mSelectedItemPosition);
+        outState.putParcelable(mainGridStateKey, mainGrid.onSaveInstanceState());
         //not needed, as DB does this
 //        outState.putParcelableArrayList(movieDataKey, movieData);
         //Log.d(LOG_TAG, Integer.toString(movieData.size()) + " " + Integer.toString(sortTypeSpinner.getSelectedItemPosition()));
@@ -105,15 +124,14 @@ public class MainFragment extends Fragment implements LoaderManager.LoaderCallba
     public void onCreate(Bundle savedInstanceState) {
         Log.i(LOG_TAG, "OnCreate");
         super.onCreate(savedInstanceState);
-        sortValues = getResources().getStringArray(R.array.sort_spinner_choice_values);
+//        String[] sortValues = getResources().getStringArray(R.array.sort_spinner_choice_values);
         setHasOptionsMenu(true);
         if (savedInstanceState != null){
             Log.i(LOG_TAG, "Restoring from saved state");
-            //TODO either save gridview state, or save and scroll to the selected item
-//            mSelectedItemPosition = savedInstanceState.getInt(mSelectedItemPosKey);
+            //TODO save gridview state.
+            mSelectedItemPosition = savedInstanceState.getInt(mSelectedItemPosKey);
             spinnerPrefValue = savedInstanceState.getInt(spinnerPrefKey);
             refreshUI();
-            //Log.d(LOG_TAG, Integer.toString(movieData.size()) + " " /*+ Integer.toString(sortPreferenceValue) + " "*/ + Integer.toString(savedInstanceState.getInt(spinnerPrefKey)));
 
         }
         else {
@@ -130,21 +148,23 @@ public class MainFragment extends Fragment implements LoaderManager.LoaderCallba
         View rootView = inflater.inflate(R.layout.fragment_main,container,false);
         mCursAdapter = new MainFragmentCursorAdapter(getActivity(), null, 0);
 
-        GridView mainGrid = (GridView)rootView.findViewById(R.id.main_grid);
+        mainGrid = (GridView)rootView.findViewById(R.id.main_grid);
 
         mainGrid.setAdapter(mCursAdapter);
+//        mainGrid.setItemChecked(mSelectedItemPosition, true);
         mainGrid.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
-//                mSelectedItemPosition = position;
-                Intent detailCallingIntent = new Intent(getActivity(),MovieDetailActivity.class);
+                mSelectedItemPosition = position;
+//                Intent detailCallingIntent = new Intent(getActivity(),MovieDetailActivity.class);
                 Cursor cursor = (Cursor) adapterView.getItemAtPosition(position);
                 if (cursor != null) {
                     //set flag for clear top?
                     Uri detailUri = MoviesDataContract.MoviesEntry.buildMovieUri(cursor.getLong(COL_MOVIE_ID));
                     Log.d(LOG_TAG, "Calling Detail with uri: " + detailUri);
-                    detailCallingIntent.setData(detailUri);
-                    startActivity(detailCallingIntent);
+                    ((Callback)getActivity()).onItemSelected(detailUri);
+//                    detailCallingIntent.setData(detailUri);
+//                    startActivity(detailCallingIntent);
                 }
             }
         });
@@ -385,6 +405,12 @@ public class MainFragment extends Fragment implements LoaderManager.LoaderCallba
             case CURS_LOADER:{
                 Log.i(LOG_TAG, "Finished CursorLoader");
                 mCursAdapter.swapCursor(data);
+                if (mSelectedItemPosition != GridView.INVALID_POSITION) {
+                    //possibly not best practice
+                    mainGrid.requestFocusFromTouch();
+                    mainGrid.setSelection(mSelectedItemPosition);
+                    mainGrid.clearFocus();
+                }
 //                mCursAdapter.notifyDataSetChanged();
                 break;
             }

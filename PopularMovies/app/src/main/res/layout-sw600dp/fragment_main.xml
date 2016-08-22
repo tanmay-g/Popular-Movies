@@ -1,0 +1,23 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="tanmaygodbole.popularmovies.MainFragment"
+    android:id="@+id/main_fragment_frame">
+
+    <GridView
+        android:layout_width="wrap_content"
+        android:numColumns="2"
+        android:layout_height="fill_parent"
+        android:id="@+id/main_grid"
+        android:stretchMode="columnWidth"
+        android:gravity="fill"
+        style="@style/gridViewStyle"
+        android:background="#e0e0e0"
+        android:drawSelectorOnTop="true"
+        android:listSelector="@drawable/border_selected"
+        >
+    </GridView>
+        <!--android:columnWidth="400dp"-->
+
+</FrameLayout>

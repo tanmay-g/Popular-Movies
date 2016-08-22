@@ -33,8 +33,14 @@ public class ReviewAdapter extends DetailsContentAdapter {
 
         Map.Entry<String, String> item = getItem(position);
 
-        ((TextView) resultView.findViewById(R.id.review_name)).setText(item.getKey());
-        ((TextView) resultView.findViewById(R.id.review_content)).setText(item.getValue());
+        TextView reviewName = ((TextView) resultView.findViewById(R.id.review_name));
+        reviewName.setText(item.getKey());
+        reviewName.setId(View.generateViewId());
+        TextView reviewContent = ((TextView) resultView.findViewById(R.id.review_content));
+        reviewContent.setText(item.getValue());
+        reviewContent.setId(View.generateViewId());
+
+        resultView.setId(View.generateViewId());
 
 //        resultView.setOnClickListener(new View.OnClickListener() {
 //            @Override

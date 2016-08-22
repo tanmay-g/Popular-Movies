@@ -55,10 +55,12 @@ public class MainFragmentCursorAdapter extends CursorAdapter {
     public void bindView(View view, Context context, Cursor cursor) {
         String movieId = String.valueOf(cursor.getLong(MainFragment.COL_MOVIE_ID));
         File posterImage = getPosterFile(context, movieId);
-        ImageView image = (ImageView) view.findViewById(R.id.grid_item_image_imageview);
-        if (R.id.grid_item_image_imageview != image.getId())
-            Log.e(LOG_TAG, "Different image view??");
+        ImageView image = (ImageView) view;//.findViewById(R.id.grid_item_image_imageview);
+//        if (R.id.grid_item_image_imageview != image.getId())
+//            Log.e(LOG_TAG, "Different image view??");
 
+//        ((FrameLayout)image.getParent()).setId(View.generateViewId());
+        image.setId(View.generateViewId());
 //        image.setAdjustViewBounds(true);
         addPoster(context, image, posterImage);
     }
