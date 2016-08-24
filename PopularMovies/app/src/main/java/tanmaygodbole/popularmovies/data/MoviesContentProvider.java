@@ -8,7 +8,6 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
 import android.support.annotation.NonNull;
-import android.util.Log;
 
 /**
  * Created by Tanmay.godbole on 02-08-2016
@@ -133,12 +132,11 @@ public class MoviesContentProvider extends ContentProvider {
         Cursor returnUri;
         switch (sUriMatcher.match(uri)){
             case POPULAR:{
-                Log.i(LOG_TAG, "Query for popular");
+//                Log.i(LOG_TAG, "Query for popular");
 //                Log.d("PROVIDER", Arrays.toString(projection));
                 returnUri = sPopularQueryBuilder.query(
                         mOpenHelper.getReadableDatabase(),
                         projection,
-//                        null,
                         selection,
                         selectionArgs,
                         null,
@@ -148,7 +146,7 @@ public class MoviesContentProvider extends ContentProvider {
                 break;
             }
             case POPULAR_WITH_ID:{
-                Log.i(LOG_TAG, "Query for popular with id");
+//                Log.i(LOG_TAG, "Query for popular with id");
                 String select = MoviesDataContract.PopularEntry.TABLE_NAME + "." +
                         MoviesDataContract.PopularEntry.COLUMN_MOVIE_ID + " =? ";
                 String id = MoviesDataContract.PopularEntry.getMovieIdFromUri(uri);
@@ -164,7 +162,7 @@ public class MoviesContentProvider extends ContentProvider {
                 break;
             }
             case TOPRATED:{
-                Log.i(LOG_TAG, "Query for toprated");
+//                Log.i(LOG_TAG, "Query for toprated");
                 returnUri = sTopratedQueryBuilder.query(
                         mOpenHelper.getReadableDatabase(),
                         projection,
@@ -177,7 +175,7 @@ public class MoviesContentProvider extends ContentProvider {
                 break;
             }
             case TOPRATED_WITH_ID:{
-                Log.i(LOG_TAG, "Query for toprated with id");
+//                Log.i(LOG_TAG, "Query for toprated with id");
                 String select = MoviesDataContract.TopratedEntry.TABLE_NAME + "." +
                         MoviesDataContract.TopratedEntry.COLUMN_MOVIE_ID + " =? ";
                 String id = MoviesDataContract.TopratedEntry.getMovieIdFromUri(uri);
@@ -193,7 +191,7 @@ public class MoviesContentProvider extends ContentProvider {
                 break;
             }
             case FAVOURITES:{
-                Log.i(LOG_TAG, "Query for fav");
+//                Log.i(LOG_TAG, "Query for fav");
                 returnUri = sFavouritesQueryBuilder.query(
                         mOpenHelper.getReadableDatabase(),
                         projection,
@@ -206,7 +204,7 @@ public class MoviesContentProvider extends ContentProvider {
                 break;
             }
             case FAVOURITES_WITH_ID:{
-                Log.i(LOG_TAG, "Query for fav with id");
+                //Log.i(LOG_TAG, "Query for fav with id");
                 String select = MoviesDataContract.FavouritesEntry.TABLE_NAME + "." +
                         MoviesDataContract.FavouritesEntry.COLUMN_MOVIE_ID + " =? ";
                 String id = MoviesDataContract.FavouritesEntry.getMovieIdFromUri(uri);
@@ -222,7 +220,7 @@ public class MoviesContentProvider extends ContentProvider {
                 break;
             }
             case MOVIES:{
-                Log.i(LOG_TAG, "Query for movies");
+                //Log.i(LOG_TAG, "Query for movies");
                 returnUri = sMoviesQueryBuilder.query(
                         mOpenHelper.getReadableDatabase(),
                         projection,
@@ -235,11 +233,11 @@ public class MoviesContentProvider extends ContentProvider {
                 break;
             }
             case MOVIES_WITH_ID:{
-                Log.i(LOG_TAG, "Query for movie with id");
+                //Log.i(LOG_TAG, "Query for movie with id");
                 String select = MoviesDataContract.MoviesEntry.TABLE_NAME + "." +
                         MoviesDataContract.MoviesEntry.COLUMN_MOVIE_ID + " =? ";
                 String id = MoviesDataContract.MoviesEntry.getMovieIdFromUri(uri);
-                Log.d("Provider", "Query for URI: " + uri + ", and id: " + id);
+                //Log.d("Provider", "Query for URI: " + uri + ", and id: " + id);
                 returnUri = sMoviesQueryBuilder.query(
                         mOpenHelper.getReadableDatabase(),
                         projection,

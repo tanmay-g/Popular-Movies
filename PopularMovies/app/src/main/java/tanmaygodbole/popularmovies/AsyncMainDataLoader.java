@@ -48,10 +48,6 @@ public class AsyncMainDataLoader extends AsyncTaskLoader<Cursor> {
 
         //now, fetch the data for both popular and top-rated paths, and store it in the db
 
-
-
-        //to hold the result jsons
-
         String popularJSON = null;
         String topratedJSON = null;
 
@@ -363,8 +359,6 @@ public class AsyncMainDataLoader extends AsyncTaskLoader<Cursor> {
             JSONArray moviesJsonArray = movieJson.getJSONArray(TMDB_RESULTS);
 
             cVVector = new Vector<>(moviesJsonArray.length());
-
-            //ArrayList<MovieData> movieDataArrayList = new ArrayList<>(moviesJsonArray.length());
 
             for (int i = 0; i < moviesJsonArray.length(); i++) {
                 JSONObject movieEntry = moviesJsonArray.getJSONObject(i);

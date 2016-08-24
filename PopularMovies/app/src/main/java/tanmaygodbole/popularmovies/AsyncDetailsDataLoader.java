@@ -155,7 +155,7 @@ public class AsyncDetailsDataLoader extends AsyncTaskLoader<HashMap<String, Stri
             //Log.i(LOG_TAG, "doInBackground URL: " + fetchURL.toString());
             urlConnection = (HttpURLConnection) fetchURL.openConnection();
             urlConnection.setRequestMethod("GET");
-            Log.e(LOG_TAG, "Accessing the net for: " + resourceToFetch);
+            //Log.e(LOG_TAG, "Accessing the net for: " + resourceToFetch);
             urlConnection.connect();
 
             // Read the input stream into a String
@@ -181,7 +181,7 @@ public class AsyncDetailsDataLoader extends AsyncTaskLoader<HashMap<String, Stri
             }
             jsonStr = buffer.toString();
         } catch (IOException e) {
-            Log.e(LOG_TAG, "Error " + e.toString());
+            //Log.e(LOG_TAG, "Error " + e.toString());
             return null;
         } finally{
             if (urlConnection != null) {

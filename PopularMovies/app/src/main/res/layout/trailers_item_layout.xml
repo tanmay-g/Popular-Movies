@@ -24,13 +24,3 @@
         android:id="@+id/trailer_name"
         android:layout_marginLeft="@dimen/activity_horizontal_margin" />
 </LinearLayout>
-<!--<TextView xmlns:android="http://schemas.android.com/apk/res/android"-->
-    <!--android:layout_width="match_parent"-->
-    <!--android:layout_height="wrap_content"-->
-    <!--android:text="Trailer name"-->
-    <!--android:id="@+id/trailer_name"-->
-    <!--android:drawableLeft="@android:drawable/ic_media_play"-->
-    <!--android:drawablePadding="@dimen/activity_horizontal_margin"-->
-    <!--android:gravity="center"-->
-    <!--android:clickable="true"-->
-    <!--android:singleLine="true" />-->

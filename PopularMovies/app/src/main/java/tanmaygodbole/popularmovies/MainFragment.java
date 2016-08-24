@@ -31,16 +31,12 @@ public class MainFragment extends Fragment implements LoaderManager.LoaderCallba
     private static final String lastSyncKey = "lastSync";
     private static final long DAY_IN_MILLIS = 1000 * 60 * 60 * 24;
 
-    //    static final String movieDataKey = "movieData";
-//    private ArrayList<MovieData> movieData = new ArrayList<>();
-    //private final static String movieDataSaveStateKey = "movieData";
-//    private CustomMovieToImageAdapter imageAdapter;
+
     private MainFragmentCursorAdapter mCursAdapter;
 
     private int mSelectedItemPosition = GridView.INVALID_POSITION;
     private final static String mSelectedItemPosKey = "selectedItemPosKey";
 
-    //private int sortPreferenceValue = 0;
     private Spinner sortTypeSpinner;
     private static final String spinnerPrefKey = "spinnerPref";
     private static final String mainGridStateKey = "mainGridStateKey";
@@ -69,7 +65,6 @@ public class MainFragment extends Fragment implements LoaderManager.LoaderCallba
             MoviesDataContract.MoviesEntry.COLUMN_OVERVIEW
     };
 
-//    private boolean mTwoPane;
     private GridView mainGrid;
 
     /**
@@ -84,24 +79,6 @@ public class MainFragment extends Fragment implements LoaderManager.LoaderCallba
         public void onItemSelected(Uri detailUri);
     }
 
-    @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-//        if (savedInstanceState == null) {
-            SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(getActivity());
-            long lastSync = settings.getLong(lastSyncKey, 0);
-            if (System.currentTimeMillis() - lastSync >= DAY_IN_MILLIS)
-//            getActivity().getLoaderManager().initLoader(ASYNC_MAIN_DATA_LOADER, null, this).forceLoad();
-                getLoaderManager().initLoader(ASYNC_MAIN_DATA_LOADER, null, this).forceLoad();
-//            getLoaderManager().initLoader(ASYNC_MAIN_DATA_LOADER, null, this);
-            else
-                getLoaderManager().initLoader(CURS_LOADER, null, this);
-//        }
-//        else {
-//            Log.i(LOG_TAG, "Skipping loaders, restoring saved state");
-//            mainGrid.onRestoreInstanceState(savedInstanceState.getParcelable(mainGridStateKey));
-//        }
-        super.onActivityCreated(savedInstanceState);
-    }
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
@@ -109,9 +86,6 @@ public class MainFragment extends Fragment implements LoaderManager.LoaderCallba
         outState.putInt(spinnerPrefKey, sortTypeSpinner.getSelectedItemPosition());
         outState.putInt(mSelectedItemPosKey, mSelectedItemPosition);
         outState.putParcelable(mainGridStateKey, mainGrid.onSaveInstanceState());
-        //not needed, as DB does this
-//        outState.putParcelableArrayList(movieDataKey, movieData);
-        //Log.d(LOG_TAG, Integer.toString(movieData.size()) + " " + Integer.toString(sortTypeSpinner.getSelectedItemPosition()));
         super.onSaveInstanceState(outState);
     }
 
@@ -122,20 +96,16 @@ public class MainFragment extends Fragment implements LoaderManager.LoaderCallba
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        Log.i(LOG_TAG, "OnCreate");
+//        Log.i(LOG_TAG, "OnCreate");
         super.onCreate(savedInstanceState);
-//        String[] sortValues = getResources().getStringArray(R.array.sort_spinner_choice_values);
         setHasOptionsMenu(true);
         if (savedInstanceState != null){
-            Log.i(LOG_TAG, "Restoring from saved state");
-            //TODO save gridview state.
             mSelectedItemPosition = savedInstanceState.getInt(mSelectedItemPosKey);
             spinnerPrefValue = savedInstanceState.getInt(spinnerPrefKey);
-            refreshUI();
 
         }
         else {
-            //why was this commented?
+
             spinnerPrefValue = PreferenceManager.getDefaultSharedPreferences(getActivity()).getInt(sortPreferenceKey,0);
         }
     }
@@ -143,7 +113,7 @@ public class MainFragment extends Fragment implements LoaderManager.LoaderCallba
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        Log.i(LOG_TAG, "OnCreateView");
+//        Log.i(LOG_TAG, "OnCreateView");
 
         View rootView = inflater.inflate(R.layout.fragment_main,container,false);
         mCursAdapter = new MainFragmentCursorAdapter(getActivity(), null, 0);
@@ -151,25 +121,41 @@ public class MainFragment extends Fragment implements LoaderManager.LoaderCallba
         mainGrid = (GridView)rootView.findViewById(R.id.main_grid);
 
         mainGrid.setAdapter(mCursAdapter);
-//        mainGrid.setItemChecked(mSelectedItemPosition, true);
         mainGrid.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
                 mSelectedItemPosition = position;
-//                Intent detailCallingIntent = new Intent(getActivity(),MovieDetailActivity.class);
                 Cursor cursor = (Cursor) adapterView.getItemAtPosition(position);
                 if (cursor != null) {
-                    //set flag for clear top?
                     Uri detailUri = MoviesDataContract.MoviesEntry.buildMovieUri(cursor.getLong(COL_MOVIE_ID));
-                    Log.d(LOG_TAG, "Calling Detail with uri: " + detailUri);
+//                    Log.d(LOG_TAG, "Calling Detail with uri: " + detailUri);
                     ((Callback)getActivity()).onItemSelected(detailUri);
-//                    detailCallingIntent.setData(detailUri);
-//                    startActivity(detailCallingIntent);
                 }
             }
         });
 
         return rootView;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+    }
+
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+
+        SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(getActivity());
+        long lastSync = settings.getLong(lastSyncKey, 0);
+        if (System.currentTimeMillis() - lastSync >= DAY_IN_MILLIS)
+            getLoaderManager().initLoader(ASYNC_MAIN_DATA_LOADER, null, this).forceLoad();
+        else
+            getLoaderManager().initLoader(CURS_LOADER, null, this);
+        if (savedInstanceState != null) {
+            mainGrid.onRestoreInstanceState(savedInstanceState.getParcelable(mainGridStateKey));
+        }
+
+        super.onActivityCreated(savedInstanceState);
     }
 
     @Override
@@ -192,9 +178,6 @@ public class MainFragment extends Fragment implements LoaderManager.LoaderCallba
                     settingsEditor.putInt(sortPreferenceKey, position);
                     settingsEditor.apply();
                     if (spinnerPrefValue != position) {
-                        //new FetchMoviesTask().execute(sortValues[settings.getInt(sortPreferenceKey, 0)]);
-                        //new FetchMoviesTask().execute(sortValues[position]);
-
                         spinnerPrefValue = position;
                         refreshUI();
                     }
@@ -215,147 +198,19 @@ public class MainFragment extends Fragment implements LoaderManager.LoaderCallba
     }
 
     private void refreshUI(){
-        Log.i(LOG_TAG, "refreshUI was called");
+//        Log.i(LOG_TAG, "refreshUI was called");
         getLoaderManager().restartLoader(CURS_LOADER, null, this);
     }
-
-//    class FetchMoviesTask extends AsyncTask<String, Void, String> {
-//
-//        private final String LOG_TAG = FetchMoviesTask.class.getSimpleName();
-//
-//        /**
-//         * Take the String representing the complete forecast in JSON Format and
-//         * pull out the data we need to construct the Strings needed for the wireframes.
-//         *
-//         * Fortunately parsing is easy:  constructor takes the JSON string and converts it
-//         * into an Object hierarchy for us.
-//         */
-//        private ArrayList<MovieData> getMovieDataFromJson(String movieJsonStr) throws JSONException {
-//            //Log.i(LOG_TAG, "getMovieDataFromJson");
-//
-//            // These are the names of the JSON objects that need to be extracted.
-//            final String TMDB_RESULTS = "results";
-//            final String TMDB_TITLE = "title";
-//            final String TMDB_OVERVIEW = "overview";
-//            final String TMDB_POSTER = "poster_path";
-//            final String TMDB_AVG = "vote_average";
-//            final String TMDB_DATE = "release_date";
-//
-//            JSONObject movieJson = new JSONObject(movieJsonStr);
-//            JSONArray resultsArray = movieJson.getJSONArray(TMDB_RESULTS);
-//
-//            ArrayList<MovieData> movieDataArrayList = new ArrayList<>(resultsArray.length());
-//
-//            for (int i=0; i < resultsArray.length(); i++){
-//                JSONObject movieEntry = resultsArray.getJSONObject(i);
-//                movieDataArrayList.add(new MovieData(movieEntry.getString(TMDB_POSTER),
-//                        movieEntry.getString(TMDB_TITLE),
-//                        movieEntry.getString(TMDB_OVERVIEW),
-//                        movieEntry.getDouble(TMDB_AVG),
-//                        movieEntry.getString(TMDB_DATE)));
-//                //Log.i(LOG_TAG, "Parsed poster path: " + movieEntry.getString(TMDB_POSTER));
-//            }
-//            return movieDataArrayList;
-//        }
-//
-//        @Override
-//        protected String doInBackground(String... params) {
-//            //Log.i(LOG_TAG, "doInBackground");
-//            String movieListJsonStr = null;
-//            if (params.length==0){
-//                return null;
-//            }
-//            HttpURLConnection urlConnection = null;
-//            BufferedReader reader = null;
-//            try {
-//                if (params[0] == null){
-//                    params[0]="popular";
-//                    Log.e(LOG_TAG, "had to use default sort pref");
-//                }
-//                Uri.Builder tmdbBuilder = new Uri.Builder();
-//                tmdbBuilder.scheme("http")
-//                        .authority("api.themoviedb.org")
-//                        .appendPath("3")
-//                        .appendPath("movie")
-//                        .appendPath(params[0])
-//                        .appendQueryParameter("api_key",BuildConfig.THE_MOVIE_DATABASE_API_KEY);
-//                URL fetchURL = new URL(tmdbBuilder.build().toString());
-//                //Log.i(LOG_TAG, "doInBackground URL: " + fetchURL.toString());
-//                urlConnection = (HttpURLConnection) fetchURL.openConnection();
-//                urlConnection.setRequestMethod("GET");
-//                Log.e(LOG_TAG, "Accessing the net");
-//                urlConnection.connect();
-//
-//                // Read the input stream into a String
-//                InputStream inputStream = urlConnection.getInputStream();
-//                StringBuilder buffer = new StringBuilder();
-//                if (inputStream == null) {
-//                    // Nothing to do.
-//                    return null;
-//                }
-//                reader = new BufferedReader(new InputStreamReader(inputStream));
-//
-//                String line;
-//                while ((line = reader.readLine()) != null) {
-//                    // Since it's JSON, adding a newline isn't necessary (it won't affect parsing)
-//                    // But it does make debugging a *lot* easier if you print out the completed
-//                    // buffer for debugging.
-//                    buffer.append(line).append("\n");
-//                }
-//
-//                if (buffer.length() == 0) {
-//                    // Stream was empty.  No point in parsing.
-//                    return null;
-//                }
-//                movieListJsonStr = buffer.toString();
-//            } catch (IOException e) {
-//                e.printStackTrace();
-//            } finally{
-//                if (urlConnection != null) {
-//                    urlConnection.disconnect();
-//                }
-//                if (reader != null) {
-//                    try {
-//                        reader.close();
-//                    } catch (final IOException e) {
-//                        Log.e(LOG_TAG, "Error closing stream", e);
-//                    }
-//                }
-//            }
-//            //Log.i(LOG_TAG, "movieListJsonStr: " + movieListJsonStr);
-//            return movieListJsonStr;
-//        }
-//
-//        @Override
-//        protected void onPostExecute(String movieJson) {
-//            //Log.i(LOG_TAG, "onPostExecute");
-//            if (movieJson != null){
-//                try {
-//                    movieData = getMovieDataFromJson(movieJson);
-//                } catch (JSONException e) {
-//                    e.printStackTrace();
-//                    Toast.makeText(getActivity(),"Failed parsing JSON", Toast.LENGTH_SHORT).show();
-//                    return;
-//                }
-//
-//                imageAdapter.clear();
-//                imageAdapter.addAll(movieData);
-//
-//                //Log.i(LOG_TAG, "Sent list to adapter");
-//
-//            }
-//        }
-//    }
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         switch (id){
             case ASYNC_MAIN_DATA_LOADER: {
-                Log.i(LOG_TAG, "Starting AsyncLoader");
+//                Log.i(LOG_TAG, "Starting AsyncLoader");
                 return new AsyncMainDataLoader(getActivity(), args);
             }
             case CURS_LOADER: {
-                Log.i(LOG_TAG, "Starting CursorLoader");
+//                Log.i(LOG_TAG, "Starting CursorLoader");
                 Uri fetchUri = null;
                 switch (spinnerPrefValue){
                     case POPULAR:{
@@ -396,18 +251,19 @@ public class MainFragment extends Fragment implements LoaderManager.LoaderCallba
                 SharedPreferences.Editor settingsEditor = settings.edit();
                 settingsEditor.putLong(lastSyncKey, System.currentTimeMillis());
                 settingsEditor.apply();
-                Log.i(LOG_TAG, "Finished asyncLoad. Will now start cursor loader");
+//                Log.i(LOG_TAG, "Finished asyncLoad. Will now start cursor loader");
                 //Cursor loader isn't started at activity creation if a sync is needed
                 getLoaderManager().initLoader(CURS_LOADER, null, this);
                 break;
 
             }
             case CURS_LOADER:{
-                Log.i(LOG_TAG, "Finished CursorLoader");
+//                Log.i(LOG_TAG, "Finished CursorLoader");
                 mCursAdapter.swapCursor(data);
                 if (mSelectedItemPosition != GridView.INVALID_POSITION) {
                     //possibly not best practice
                     mainGrid.requestFocusFromTouch();
+
                     mainGrid.setSelection(mSelectedItemPosition);
                     mainGrid.clearFocus();
                 }
@@ -423,11 +279,10 @@ public class MainFragment extends Fragment implements LoaderManager.LoaderCallba
 
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
-        //need to clean up resources
+        //clean up resources
         switch (loader.getId()){
             case ASYNC_MAIN_DATA_LOADER:{
                 break;
-                //nothing to do?
             }
             case CURS_LOADER:{
                 mCursAdapter.swapCursor(null).close();

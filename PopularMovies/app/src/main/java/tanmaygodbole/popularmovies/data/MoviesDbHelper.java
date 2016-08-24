@@ -3,7 +3,6 @@ package tanmaygodbole.popularmovies.data;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.util.Log;
 
 /**
  * Created by Tanmay.godbole on 02-08-2016
@@ -31,7 +30,6 @@ public class MoviesDbHelper  extends SQLiteOpenHelper{
                         MoviesDataContract.MoviesEntry.COLUMN_OVERVIEW + " TEXT NOT NULL, " +
                         MoviesDataContract.MoviesEntry.COLUMN_RELEASE_DATE + " TEXT NOT NULL, " +
                         MoviesDataContract.MoviesEntry.COLUMN_RATING + " TEXT NOT NULL " +
-//                        MoviesDataContract.MoviesEntry.COLUMN_IMAGE_PATH + "TEXT, " +
                         ");";
 
         final String SQL_CREATE_FAVOURITES_TABLE =
@@ -58,7 +56,7 @@ public class MoviesDbHelper  extends SQLiteOpenHelper{
                         MoviesDataContract.MoviesEntry.TABLE_NAME + " ( " + MoviesDataContract.MoviesEntry.COLUMN_MOVIE_ID + ")" +
                         ");";
 
-        Log.i(LOG_TAG, "Creating the tables");
+        //Log.i(LOG_TAG, "Creating the tables");
 //        Log.i(LOG_TAG, "MOVIES: " + SQL_CREATE_MOVIES_TABLE);
 //        Log.i(LOG_TAG, "FAV: " + SQL_CREATE_FAVOURITES_TABLE);
 //        Log.i(LOG_TAG, "POP: " + SQL_CREATE_POPULAR_TABLE);

@@ -9,4 +9,3 @@
     android:ellipsize="marquee"
     android:background="@color/colorPrimary"
     android:textColor="@color/colorWhite"/>
-    <!--android:layout_height="?android:attr/dropdownListPreferredItemHeight"-->

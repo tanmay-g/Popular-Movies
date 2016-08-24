@@ -9,4 +9,5 @@
     <color name="light_orange">#ffab40</color>
     <color name="light_green">#00e676</color>
     <color name="light_blue">#18ffff</color>
+    <color name="black">#000000</color>
 </resources>

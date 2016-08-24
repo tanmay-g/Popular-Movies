@@ -17,6 +17,4 @@
         android:drawSelectorOnTop="true"
         android:listSelector="@drawable/border_selected">
     </GridView>
-        <!--android:columnWidth="400dp"-->
-
 </FrameLayout>

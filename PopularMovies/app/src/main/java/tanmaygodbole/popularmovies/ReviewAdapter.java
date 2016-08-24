@@ -42,16 +42,6 @@ public class ReviewAdapter extends DetailsContentAdapter {
 
         resultView.setId(View.generateViewId());
 
-//        resultView.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                String youtubeUrlStr = (String) v.getTag();
-//                Intent youtubeIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(youtubeUrlStr));
-//                youtubeIntent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
-//                context.startActivity(youtubeIntent);
-//            }
-//        });
-
         return resultView;
     }
 }

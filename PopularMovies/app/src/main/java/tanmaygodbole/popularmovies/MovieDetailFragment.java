@@ -19,6 +19,7 @@ import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ScrollView;
 import android.widget.TextView;
 
 import java.io.File;
@@ -34,19 +35,20 @@ public class MovieDetailFragment extends Fragment{
     private static final int CURS_LOADER = 0;
     private static final int ASYNC_DETAILS_LOADER = 1;
     static final String DETAIL_URI_KEY = "DETAIL_URI_KEY";
-    private boolean restoring = false;
+    private static final String scrollViewStateKey = "scrollViewStateKey";
 
     private LoaderManager.LoaderCallbacks<HashMap<String, String>[]> asyncLoaderListener = new LoaderManager.LoaderCallbacks<HashMap<String, String>[]>() {
         @Override
         public Loader<HashMap<String, String>[]> onCreateLoader(int id, Bundle args) {
-            Log.i(LOG_TAG, "Starting the details async Loader");
+//            Log.i(LOG_TAG, "Starting the details async Loader");
             return new AsyncDetailsDataLoader(getActivity(), args);
         }
 
         @Override
         public void onLoadFinished(Loader<HashMap<String, String>[]> loader, HashMap<String, String>[] data) {
-            Log.i(LOG_TAG, "Finished the details async Loader");
+//            Log.i(LOG_TAG, "Finished the details async Loader");
             //Since very few items are expected, use a Linear layout, and then just populate
+
             //first for trailers
             HashMap<String, String> trailersMap = null;
             HashMap<String, String> reviewsMap = null;
@@ -89,7 +91,7 @@ public class MovieDetailFragment extends Fragment{
     private LoaderManager.LoaderCallbacks<Cursor> cursorLoaderListener = new LoaderManager.LoaderCallbacks<Cursor>() {
         @Override
         public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-            Log.i(LOG_TAG, "Starting the details cursor loader");
+//            Log.i(LOG_TAG, "Starting the details cursor loader");
             return new CursorLoader(
                     getActivity(),
                     mSelectedMovieUri,
@@ -102,7 +104,7 @@ public class MovieDetailFragment extends Fragment{
 
         @Override
         public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-            Log.i(LOG_TAG, "Finished the details cursor loader");
+//            Log.i(LOG_TAG, "Finished the details cursor loader");
             if (!data.moveToFirst())
                 return;
             String movieId = String.valueOf(data.getLong(MainFragment.COL_MOVIE_ID));
@@ -110,7 +112,8 @@ public class MovieDetailFragment extends Fragment{
             File poster = MainFragmentCursorAdapter.getPosterFile(getActivity(), movieId);
             String synopsis = data.getString(MainFragment.COL_MOVIE_OVERVIEW);
             String date = data.getString(MainFragment.COL_MOVIE_DATE).split("-")[0];
-            String rating = data.getString(MainFragment.COL_MOVIE_RATING) + "/10";
+            String rating = data.getString(MainFragment.COL_MOVIE_RATING);// + "/10";
+
 
             getActivity().setTitle(title);
             titleView.setText(title);
@@ -140,15 +143,15 @@ public class MovieDetailFragment extends Fragment{
     private LinearLayout trailersList;
     private TextView reviewsLabelView;
     private LinearLayout reviewsList;
+    private ScrollView mainScroller;
 
     public MovieDetailFragment() {
     }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
-        Log.i(LOG_TAG, "onCreate");
+//        Log.i(LOG_TAG, "onCreate");
         super.onCreate(savedInstanceState);
-        //TODO save instance state?
         setHasOptionsMenu(true);
     }
 
@@ -166,14 +169,17 @@ public class MovieDetailFragment extends Fragment{
                     null,
                     null
             );
-            favStar.setChecked(favTableQueryResult.moveToFirst());
+            if (favTableQueryResult != null) {
+                favStar.setChecked(favTableQueryResult.moveToFirst());
+                favTableQueryResult.close();
+            }
 //            Log.i(LOG_TAG, "Setting star value to: " + favStar.isChecked());
         }
     }
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        Log.i(LOG_TAG, "onCreateOptionsMenu");
+//        Log.i(LOG_TAG, "onCreateOptionsMenu");
         super.onCreateOptionsMenu(menu, inflater);
         if (movieId == null)
             return;
@@ -223,8 +229,8 @@ public class MovieDetailFragment extends Fragment{
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        restoring = (savedInstanceState != null);
-        Log.i(LOG_TAG, "onCreateView");
+//        restoring = (savedInstanceState != null);
+//        Log.i(LOG_TAG, "onCreateView");
         View rootView = inflater.inflate(R.layout.fragment_movie_detail, container, false);
         Bundle arguments = getArguments();
         if (arguments != null) {
@@ -233,6 +239,11 @@ public class MovieDetailFragment extends Fragment{
         }
         else
             return null;
+
+        mainScroller = (ScrollView) rootView.findViewById(R.id.detailsScroller);
+        if (savedInstanceState != null) {
+            mainScroller.scrollTo(0, savedInstanceState.getInt(scrollViewStateKey));
+        }
 
         posterView = (ImageView) rootView.findViewById(R.id.poster);
         titleView = ((TextView)rootView.findViewById(R.id.title));
@@ -249,17 +260,22 @@ public class MovieDetailFragment extends Fragment{
 
     @Override
     public void onResume() {
-        Log.i(LOG_TAG, "onResume");
-        if (movieId != null && !restoring) {
+//        Log.i(LOG_TAG, "onResume");
+        if (movieId != null) {
             getLoaderManager().initLoader(CURS_LOADER, null, cursorLoaderListener);
             Bundle args = new Bundle();
             args.putString(AsyncDetailsDataLoader.detailsLoaderBundleMovieIdKey, movieId);
             getLoaderManager().initLoader(ASYNC_DETAILS_LOADER, args, asyncLoaderListener);
         }
-        if (restoring)
-            Log.d(LOG_TAG, "Skipping loaders because will restore");
         super.onResume();
     }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putInt(scrollViewStateKey, mainScroller.getScrollY());
+    }
+
 
 //    @Override
 //    public void onActivityCreated(@Nullable Bundle savedInstanceState) {

@@ -6,6 +6,5 @@
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:button="@android:drawable/btn_star"
-    />
-    <!--android:clickable="true"-->
-    <!--android:src="@drawable/favourites_star_selector"-->
+/>
+
